@@ -52,11 +52,17 @@ var update = function(modifier) {
 		boxx += 320 * modifier;
 	}
     
-    boxpos += 100 * modifier;
+    boxpos += (100 + 200*(1-Math.exp(-boxpos/1000))) * modifier;
 }
 
 var roadcenter = function(dist) {
-    return 300;
+    var i = Math.floor(dist/1600);
+    var p = dist - i*1600;
+    
+    if (p < 800) {
+        return 100 + 440*p/800;
+    }
+    return 540 - 440*(p-800)/800;;
 }
 var roadwidth = function(dist) {
     return 50 + 400 * Math.exp(-dist/1000);
@@ -74,6 +80,7 @@ var render = function() {
     var camend = camstart + 640;
 
     var topcenter = roadcenter(camend);
+    console.log(topcenter);
     var topw = roadwidth(camend);
 
     var bottomcenter = roadcenter(camstart);
