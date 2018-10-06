@@ -1,0 +1,111 @@
+<html>
+    <head></head>
+    <body>
+<script type='text/javascript'>
+var canvas = document.createElement("canvas");
+var ctx = canvas.getContext("2d");
+canvas.width = 640;
+canvas.height = 640;
+document.body.appendChild(canvas);
+
+var w = window;
+requestAnimationFrame = w.requestAnimationFrame || w.webkitRequestAnimationFrame || w.msRequestAnimationFrame || w.mozRequestAnimationFrame;
+
+// Handle keyboard controls
+var keysDown = {};
+
+addEventListener("keydown", function (e) {
+	keysDown[e.keyCode] = true;
+}, false);
+
+addEventListener("keyup", function (e) {
+	delete keysDown[e.keyCode];
+}, false);
+
+var then = Date.now();
+var main = function () {
+	var now = Date.now();
+	var delta = now - then;
+
+	update(delta / 1000);
+	render();
+
+	then = now;
+
+	// Request to do this again ASAP
+	requestAnimationFrame(main);
+};
+
+var boxpos = 0;
+var boxx = 320;
+var update = function(modifier) {
+    //if (38 in keysDown) { // Player holding up
+	//	hero.y -= 10 * modifier;
+	//}
+	//if (40 in keysDown) { // Player holding down
+	//	hero.y += 10 * modifier;
+	//}
+	if (37 in keysDown) { // Player holding left
+		boxx -= 320 * modifier;
+	}
+	if (39 in keysDown) { // Player holding right
+		boxx += 320 * modifier;
+	}
+    
+    boxpos += 100 * modifier;
+}
+
+var roadcenter = function(dist) {
+    return 300;
+}
+var roadwidth = function(dist) {
+    return 50 + 400 * Math.exp(-dist/1000);
+}
+
+var render = function() {
+
+    ctx.beginPath();
+    ctx.fillStyle = "#d82960";
+    ctx.rect(0,0,640,640);
+    ctx.fill();
+
+    
+    var camstart = boxpos - 100;
+    var camend = camstart + 640;
+
+    var topcenter = roadcenter(camend);
+    var topw = roadwidth(camend);
+
+    var bottomcenter = roadcenter(camstart);
+    var bottomw = roadwidth(camstart);
+    
+    var i = Math.floor(camstart/800)
+    var broken = false;// = i !=Math.floor(camend/800);
+
+    ctx.beginPath();
+    ctx.fillStyle = "#efdf8d";
+
+    ctx.moveTo(topcenter-topw/2, 0);
+    ctx.lineTo(topcenter+topw/2, 0);
+    if (broken) {
+        ctx.lineTo(520+roadwidth((i+1)*800), (i+1)*800);
+    }
+    ctx.lineTo(bottomcenter+bottomw/2, 640);
+    ctx.lineTo(bottomcenter-bottomw/2, 640);
+    if (broken) {
+        ctx.lineTo(120-roadwidth((i+1)*800), (i+1)*800);
+    }
+
+    ctx.fill();
+    
+    ctx.beginPath();
+    ctx.fillStyle = '#0000ff';
+    ctx.rect(boxx-10, 500+10, 20, 20);
+    ctx.fill();
+}
+
+main();
+
+</script>
+    </body>
+</html>
